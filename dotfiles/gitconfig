@@ -9,18 +9,22 @@
   name = Greg Tarsa
   email = gltarsa@gmail.com
   signingkey = 4C17D589
+
 [core]
   editor = vim
   excludesfile = /Users/tarsa/.gitignore_global
 	autocrlf = input
+
 [merge]
   tool = vimdiff
+
 [color]
   ui = auto
   branch = auto
   diff = auto
   interactive = auto
   status = auto
+
 [color "decorate"]
   # these colors are explicit settings for the official
   # defaults, here to make it easier to customize
@@ -29,13 +33,25 @@
   tag = yellow bold
   remoteBranch = red bold
   stash = magenta bold
+
 [pretty]
-  colorful = '%C(auto)%h %d %s (%Cblue%an, %Cred%ad%Creset)'
+  # Define "colorful" for pretty option
+  #   %C  - display in this color (%C(auto) turn color off if going to terminal
+  #   %h  - abbreviated commit hash (aka SHA)
+  #   %d  - ref names (e.g., branch names)
+  #   %s  - subject (e.g., first line of commit message)
+  #   %an - author name
+  #   %ad - author date (i.e., timestamp for commit)
+  #   (see 'man git-log', 'PRETTY FORMATS' for more info)
+	colorful = '%C(auto)%h %d %s (%Cblue%an, %Cred%ad%Creset)'
   today = '%C(auto)%h %d %s'
+
 [alias]
   # Log Line (color)
-  lll = log --graph --decorate --oneline --all --color --pretty=colorful --date=relative
-  ll  = log --graph --decorate --oneline --all --color --pretty=colorful --date=relative --max-count=25
+	lll = log --graph --decorate --oneline --all --color --pretty=colorful --date=relative
+	ll = lll --max-count=25
+	l = log --decorate --oneline --all --color --pretty=colorful --date=relative --max-count=25
+  ltoday = lll --since=00:00:00 --no-merges --author=tarsa --pretty=today
   #
   # shorthand and spellos
   dif = diff
@@ -55,26 +71,28 @@
   staash = stash --include-untracked  # untracked AND tracked files
   staaash = stash --all               # ignore everything (equiv to clone state)
 	praise = blame                      # why only blame?  Sometimes we praise
-  ltoday = lll --since=00:00:00 --no-merges --author=tarsa --pretty=today
-  today  = lll --since=00:00:00 --no-merges --author=tarsa --pretty=today
 
 [push]
   default = tracking
+
+[pull]
+	rebase = true
 
 #
 # setting the helper to cache helps relieve the need to type your
 # password all the time
 [credential]
   helper = cache
+
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path =
+
 [mergetool "sourcetree"]
 	cmd = /Users/tarsa/Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
+
 [filter "media"]
   clean = git media clean %f
   smudge = git media smudge %f
   required = true
-[pull]
-	rebase = true
