@@ -81,6 +81,7 @@ which bundle > /dev/null 2>&1 && {
   alias be='bundle exec'
   alias cap="be cap"
   alias cucumber="be cucumber"
+  alias haml-lint="be haml-lint"
   alias rackup="be rackup"
   alias erackup="be rackup -o 0.0.0.0"  # enable server to be seen external to the local box
   alias pry="be pry"
@@ -95,7 +96,7 @@ which bundle > /dev/null 2>&1 && {
 alias cp="cp -v"
 which colordiff > /dev/null 2>&1 && alias diff=colordiff
 which docker > /dev/null 2>&1 && {
-  alias daliases='alias | egrep "alias d" | egrep -v " df| du"  && declare -f deb && declare -f drestart && declare -f dlog'
+  alias daliases='alias | egrep "alias d" | egrep -v " df| du"  && for f in deb drestart dlog dl; do declare -f $f; done'
   alias dalias=daliases
   alias dc='docker-compose'
   alias dcup='docker-compose up -d'
@@ -123,7 +124,10 @@ which docker > /dev/null 2>&1 && {
   alias drm='docker rm -f'
   alias dstop='docker stop'
   alias dlerrors="dlog dataloader 2>&1  | egrep --line-buffered -i 'warning|error|sleeping forever' | grep -v --line-buffered Octopus | grep -v --line-buffered 'Errors Count: 0'"
-
+  function dl() {
+    docker exec -t dataloader /bin/su - cadredd -c "/opt/ateb-deploy/datasets/bin/import_test_data.rb $*" |
+      grep -v '^INFO:'
+  }
 }
 alias du='du -h' # human-readable sizes
 alias df='df -Ph' # human-readable sizes
@@ -174,6 +178,7 @@ which next > /dev/null 2>&1 && {
 alias mq='sendmail -bp'
 alias mqueue=mq
 alias mv='mv -v'
+alias ng_test_on_console='ng test --code-coverage=false --watch=false --browsers=ChromeHeadless --reporters=spec'
 # Ubuntu options
 test `uname` = Linux && {
   alias open="exo-open"
@@ -199,6 +204,7 @@ function usejava () {
   remove_from PATH $JAVA_HOME/bin
   export  JAVA_HOME="$(/usr/libexec/java_home -v$version)"
   prepend_to PATH ${JAVA_HOME}/bin
+  java -version
 }
 alias usejava8='usejava 8'
 alias usejava11='usejava 11'
