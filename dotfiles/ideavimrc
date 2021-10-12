@@ -3,3 +3,5 @@ set ignorecase smartcase
 set showmode
 set multiple-cursors
 set commentary
+set vim-indent-object
+
