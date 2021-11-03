@@ -125,8 +125,7 @@ which docker > /dev/null 2>&1 && {
   alias dstop='docker stop'
   alias dlerrors="dlog dataloader 2>&1  | egrep --line-buffered -i 'warning|error|sleeping forever' | grep -v --line-buffered Octopus | grep -v --line-buffered 'Errors Count: 0'"
   function dl() {
-    docker exec -t dataloader /bin/su - cadredd -c "/opt/ateb-deploy/datasets/bin/import_test_data.rb $*" |
-      grep -v '^INFO:'
+    docker exec -t dataloader /bin/su - cadredd -c "/opt/ateb-deploy/datasets/bin/import_test_data.rb $*" | grep --line-buffered -v '^INFO: [a-z.0-9]*: \.'
   }
 }
 alias du='du -h' # human-readable sizes
