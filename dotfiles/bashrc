@@ -201,9 +201,18 @@ case $(uname) in
       export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
     }
 
-    which brew > /dev/null 2>&1 &&
-      test -f $(brew --prefix)/etc/bash_completion &&
-        source $(brew --prefix)/etc/bash_completion
+    #++
+    # gt 2022: add completion extensions
+    bash_completion="$(brew --prefix)/etc/bash_completion"
+    git_completion="/usr/local/etc/bash_completion.d/git-completion.bash" # use brew version, if it exists
+    test -f $git_completion || git_completion="~/.git-completion.bash"    # use local version, otherwise
+
+    # load all the additional completion files
+    for completion_file in $bash_completion $git_completion ~/.hub.bash_completion.sh
+    do
+      test -f $completion_file && . $completion_file
+    done
+    #--
 
     # gt 2018: configure FZF to use Silver Searcher, if it is installed
     which ag > /dev/null 2>&1 &&
@@ -265,7 +274,7 @@ test -f ~/.bash_aliases && source ~/.bash_aliases
 
 # define default location for DOCKER PMAP loading for Omnicell laptop
 case `hostname` in
-  m-dev-gtarsa*)
+  m-dev-gtarsa*|OM-C02G63BSMD6R|mbp-tarsa)
     base_dir=~/src/work/docker-pmap
     export DOCK_PMAPWEB=~/src/work/trunk
     export DOCK_COMPONENT=$base_dir/ci-2.0/component

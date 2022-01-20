@@ -57,14 +57,6 @@ function do_after()
 
     "$@" ; $postcmd
     }
-#++
-# add completion extensions
-git_completion="/usr/local/etc/bash_completion.d/git-completion.bash"
-test -f $git_completion || git_completion="~/.git-completion.bash"
-for i in $git_completion ~/.hub.bash_completion.sh
-do
-  test -f $i && source $i
-done
 
 # use --color, when able; also follow symlinks, use human sizes + show file types
 lscmd="ls -FshH"
