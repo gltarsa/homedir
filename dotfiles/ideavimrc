@@ -1,7 +1,9 @@
 set hlsearch
 set ignorecase smartcase
-set showmode
-set multiple-cursors
-set commentary
-set vim-indent-object
-
+set showmodeset
+"" details on plugins: https://github.com/JetBrains/ideavim/wiki/Emulated-plugins
+Plug 'terryma/vim-multiple-cursors'
+Plug 'tpope/vim-commentary'            " gcc and friends, comment out specified lines
+Plug 'michaeljsmith/vim-indent-object' " ii, ai and friends
+Plug 'machakann/vim-highlightedyank'   " yanked text gets highlighted for a few seconds
+Plug 'dbakker/vim-paragraph-motion'    " } & { will match to the first blank or whitespace-filled line
