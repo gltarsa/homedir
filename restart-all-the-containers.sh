@@ -3,7 +3,7 @@ dc_home=~/src/work/dc
 dc_filename_prefix=docker-compose.
 dc_filename_suffix=.yml
 dc_dataset=$DOCK_DATASET
-default_style="quick"
+default_style="all"
 test -z $dc_dataset && dc_dataset=demo-dev-pmapwebcore
 myxtmpfile=/tmp/start-myx$$
 debug=false
@@ -33,12 +33,14 @@ Usage="$0 [--help] [--debug] [--dataset index-json-tag] [--only container-list] 
                 Default style is ${default_style}
 "
 #
-# This restarts all of my local containers.  There may be more efficient ways to do this
+# This restarts all of my "favorite" local containers.  There may be more efficient ways to do this
 # but this way works consistently
-containers=`docker ps -a --format '{{.Names}}'`
-case $containers in
-  "") containers=" obcgui myx ateb-amq identity dataloader ateb-db" ;;
-esac
+
+# Currently, a full complement of containers is 9.
+# if there are fewer than 9 containers running, start them all up
+all_containers="obcgui myx ateb-amq identity-rest ateb-db ope-app ope-gateway hr hr-app hr-gateway"
+# all_containers="obcgui myx ateb-amq identity ateb-db ope-app ope-gateway hr hr-app hr-gateway"
+containers=$all_containers
 
 #
 # Show some DOCK_variables that occasionally change so we can be subtly reminded of differences
@@ -64,7 +66,7 @@ do
 
     --only|--o*|-o)
       shift
-      containers=$1
+      containers=$@
       ;;
 
     --dataset|--data*)
@@ -103,8 +105,8 @@ case $debug in
   true) say 'Debugging' ;;
 esac
 
-say "${style:-"default"}"  # if style is not set, say "default"
-say dataset $dc_dataset
+say "style ${style:-"default"}"  # if style is not set, say "default"
+# say dataset $dc_dataset
 
 #++ define functions
 function debug_log {
@@ -131,11 +133,11 @@ function docker_pull_if_needed {
 
   case $debug in
     true)
-      debug_log "pushd $dc_home && $docker_compose_cmd pull"
+      debug_log "pushd $dc_home && $docker_compose_cmd pull $containers"
       ;;
 
     *)
-      pushd $dc_home && $docker_compose_cmd pull || {
+      pushd $dc_home && $docker_compose_cmd pull $containers || {
         echo 1>&2 "?docker-compose pull failed"
         exit 2
       }
@@ -233,7 +235,8 @@ function start_containers_in_list {
 function verify_these_containers_are_running {
   containers=$@
 
-  error=0 missing_containers=""
+  error=0
+  missing_containers=""
   for container in $containers
   do
     echo
@@ -247,7 +250,18 @@ function verify_these_containers_are_running {
   case $error in
     0)
       echo 1>&2 "Restart completed for '$containers'."
-      say "Restart completed for $containers"
+      echo 1>&2 "-------------------------------"
+      echo 1>&2 "    containers=$containers"
+      echo 1>&2 "all_containers=$all_containers"
+      echo 1>&2 "-------------------------------"
+      case $containers in
+        $all_containers)
+          say 'Restart completed for all containers'
+          ;;
+        *)
+          say "Restart completed for $containers"
+          ;;
+      esac
       ;;
 
     *)
@@ -289,7 +303,7 @@ case $containers in
   myx)
     ;;
 
-  "obcgui myx ateb-amq identity")
+  "obcgui myx ateb-amq identity-rest")
     echo 1>&2 "== restarting with 'quick' db"
     ;;
 
@@ -298,7 +312,11 @@ case $containers in
     ;;
 esac
 
-block_until_myx_is_up
+case $containers in
+  *myx*)
+    block_until_myx_is_up
+    ;;
+esac
 
 case $style in
   quick)
