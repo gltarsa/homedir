@@ -36,17 +36,15 @@ Usage="$0 [--help] [--debug] [--dataset index-json-tag] [--only container-list] 
 # This restarts all of my "favorite" local containers.  There may be more efficient ways to do this
 # but this way works consistently
 
-# Currently, a full complement of containers is 9.
-# if there are fewer than 9 containers running, start them all up
-all_containers="obcgui myx ateb-amq identity-rest ateb-db ope-app ope-gateway hr hr-app hr-gateway"
-# all_containers="obcgui myx ateb-amq identity ateb-db ope-app ope-gateway hr hr-app hr-gateway"
+# These are "all" the containers I use; adjust this list if other containers are/aren't needed.
+all_containers="ateb-db identity-rest ateb-amq myx hr hr-gateway ope-gateway ope-app hr-app obcgui"
 containers=$all_containers
 
 #
 # Show some DOCK_variables that occasionally change so we can be subtly reminded of differences
 echo "
 Representative DOCK_ variable values:
-  $(printenv | egrep 'DATASETS|COMPONENT|DATASET|MVNREPO' | sed '2,$s/^/  /')
+  $(printenv | egrep 'DATASETS|COMPONENT|DATASET|MVNREPO|HR_DIST' | sed '2,$s/^/  /')
 -----"
 
 style=$default_style
@@ -169,16 +167,8 @@ function block_until_myx_is_up {
   seconds=0
   pause=15
 
-  say "mix restart" # mispelled for correct pronunciation
-  echo "${nl}Waiting for myx startup to finish. . ."
-  while true
-  do
-    test "$(docker logs --tail 1 myx 2>&1)" = "$last_msg" && break
-    seconds=$((seconds + $pause))
-    sleep $pause
-    echo -ne "$(($seconds / 60)) min, $(($seconds % 60)) seconds  \r"
-  done
-  echo "Myx container has booted. Waiting for ready signal. . ."
+  say "mix check" # mispelled for correct pronunciation
+  echo "Myx container booted. Waiting for ready signal. . ."
 
   # Once started, it takes time for myx to be ready for business.
   # So, this code waits for the "open" sign to appear
@@ -186,7 +176,8 @@ function block_until_myx_is_up {
   while true
   do
     curl -S localhost:18181/cxf/api/pmap/ping > $myxtmpfile 2>&1
-    case $? in
+    myx_check_status=$?
+    case $myx_check_status in
       0)   # success...we are up and running
         break ;;
       52)  # empty reply from server...try again
@@ -198,7 +189,7 @@ function block_until_myx_is_up {
           }
           ;;
       *)
-        echo 1>&2 "? Unexpected return from curl/ping:"
+        echo 1>&2 "? Unexpected return from curl/ping: '$myx_check_status'"
         cat 1>&2 "${nl}$myxtmpfile"
         break ;;
     esac
@@ -221,12 +212,10 @@ function start_containers_in_list {
         ;;
 
       *)
-        set -x
         ( cd $dc_home
           export DOCK_DATASET=$dc_dataset
           $docker_compose_cmd up -d $container
         )
-        set +x
         ;;
     esac
   done
@@ -250,10 +239,6 @@ function verify_these_containers_are_running {
   case $error in
     0)
       echo 1>&2 "Restart completed for '$containers'."
-      echo 1>&2 "-------------------------------"
-      echo 1>&2 "    containers=$containers"
-      echo 1>&2 "all_containers=$all_containers"
-      echo 1>&2 "-------------------------------"
       case $containers in
         $all_containers)
           say 'Restart completed for all containers'
@@ -312,11 +297,7 @@ case $containers in
     ;;
 esac
 
-case $containers in
-  *myx*)
-    block_until_myx_is_up
-    ;;
-esac
+block_until_myx_is_up
 
 case $style in
   quick)
