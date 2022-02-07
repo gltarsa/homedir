@@ -188,10 +188,19 @@ case `uname` in
 esac
 alias SU=/usr/local/SU
 # to install an "off-brand" JDK:
-#   brew cask install adoptopenjdk/openjdk/adoptopenjdk{8, 11, 14}
+#   brew install --cask adoptopenjdk/openjdk/adoptopenjdk{8, 11, 14}
+# requires a password to install so /usr/libexec/java_home has it registered
 function usejava () {
   version=$1
-  [ $version = 8 ] && version="1.8"
+  case "$version" in
+    "8")
+      version="1.8"
+      ;;
+    "")
+      java -version
+      return
+      ;;
+  esac
   remove_from PATH $JAVA_HOME/bin
   export  JAVA_HOME="$(/usr/libexec/java_home -v$version)"
   prepend_to PATH ${JAVA_HOME}/bin
@@ -199,7 +208,7 @@ function usejava () {
 }
 alias usejava8='usejava 8'
 alias usejava11='usejava 11'
-alias usejava14='usejava 14'
+alias usejava14='usejava 17'
 alias vim_tags='ctags -R --tag-relative=yes -f ~/.vimtags ' \
   '--exclude="*.vim" ' \
   '--exclude=".#?*" ' \
