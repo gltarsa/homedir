@@ -101,9 +101,9 @@ which docker > /dev/null 2>&1 && {
     docker logs $@ 2>&1
   }
   alias dlogf='docker logs -f 2>&1'
-  alias dps="docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}' | cut -c 1-"'`tput cols`'
-  alias dpss="docker ps -a --format 'table {{.ID}} {{.Names}}\t{{.Image}}\t{{.Ports}}({{.Status}})'"
-  alias dpsl="docker ps -a --format '{{.Names}}'"
+  alias dps="docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}' | grep -v k8s | sed -E 's/ {105}//' | cut -c 1-"'`tput cols`'
+  alias dpss="docker ps -a --format 'table {{.ID}} {{.Names}}\t{{.Image}}\t{{.Ports}}({{.Status}})' | grep -v k8s | sed -E 's/ {105}//'"
+  alias dpsl="docker ps -a --format '{{.Names}}' | grep -v k8s"
   function drestart () { (
     echo "cd ~/src/work/dc";        \cd ~/src/work/dc;
     echo "docker stop $@";          docker stop $@;
@@ -201,14 +201,15 @@ function usejava () {
       return
       ;;
   esac
-  remove_from PATH $JAVA_HOME/bin
+  # only remove this if $JAVA_HOME has a value!
+  [ -z "$JAVA_HOME" ] && remove_from PATH $JAVA_HOME/bin
   export  JAVA_HOME="$(/usr/libexec/java_home -v$version)"
   prepend_to PATH ${JAVA_HOME}/bin
   java -version
 }
 alias usejava8='usejava 8'
 alias usejava11='usejava 11'
-alias usejava14='usejava 17'
+alias usejava17='usejava 17'
 alias vim_tags='ctags -R --tag-relative=yes -f ~/.vimtags ' \
   '--exclude="*.vim" ' \
   '--exclude=".#?*" ' \
