@@ -107,6 +107,7 @@ say "style ${style:-"default"}"  # if style is not set, say "default"
 # say dataset $dc_dataset
 
 #++ define functions
+#
 function debug_log {
   echo "  Debugging, so not executing: '$@'"
 }
@@ -256,8 +257,8 @@ function verify_these_containers_are_running {
       ;;
   esac
 }
-
-#--
+#
+#-- End define functions
 
 echo "${nl}Restarting [${containers}] using $dc_home/$dc_filename"
 
