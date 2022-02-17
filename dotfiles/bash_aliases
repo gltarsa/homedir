@@ -92,7 +92,6 @@ which docker > /dev/null 2>&1 && {
   alias dalias=daliases
   alias dc='docker-compose'
   alias dcup='docker-compose up -d'
-  alias de='docker exec -it'
   function deb () {
     echo "docker exec -it $@ sh -c 'stty cols `tput cols` && stty rows `tput lines` && /bin/bash'";
     docker exec -it $@ sh -c "stty cols `tput cols` && stty rows `tput lines` && /bin/bash";
@@ -100,7 +99,6 @@ which docker > /dev/null 2>&1 && {
   function dlog() {
     docker logs $@ 2>&1
   }
-  alias dlogf='docker logs -f 2>&1'
   alias dps="docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}' | grep -v k8s | sed -E 's/ {105}//' | cut -c 1-"'`tput cols`'
   alias dpss="docker ps -a --format 'table {{.ID}} {{.Names}}\t{{.Image}}\t{{.Ports}}({{.Status}})' | grep -v k8s | sed -E 's/ {105}//'"
   alias dpsl="docker ps -a --format '{{.Names}}' | grep -v k8s"
@@ -118,6 +116,10 @@ which docker > /dev/null 2>&1 && {
   alias dlerrors="dlog dataloader 2>&1  | egrep --line-buffered -i 'warning|error|sleeping forever' | grep -v --line-buffered Octopus | grep -v --line-buffered 'Errors Count: 0'"
   function dl() {
     docker exec -t dataloader /bin/su - cadredd -c "/opt/ateb-deploy/datasets/bin/import_test_data.rb $*" | grep --line-buffered -v '^INFO: [a-z.0-9]*: \.'
+  }
+  function dilog() {
+    container_name=$1
+    docker exec -t "$container_name" bash -c "tail -f /opt/spring/log/*.log"
   }
 }
 alias du='du -h' # human-readable sizes
@@ -168,6 +170,7 @@ which next > /dev/null 2>&1 && {
 }
 alias mq='sendmail -bp'
 alias mqueue=mq
+alias mci='mvn clean install -ff -DskipTests -DskipDbCreate'
 alias mv='mv -v'
 alias ng_test_on_console='ng test --code-coverage=false --watch=false --browsers=ChromeHeadless --reporters=spec'
 # Ubuntu options
