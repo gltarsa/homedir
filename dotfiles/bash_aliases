@@ -231,9 +231,12 @@ alias x='clear'
 alias xrs='xrdb -query'
 alias xssh='ssh -X' # enable X11 passthru by default
 # icon manipulation.  Works for most/many terminal emulators
-function xicon()  { echo """]1;$@"; }
-function xtitle() { echo """]2;$@         `hostname`"; }
-function xboth()  { xicon $@; xtitle $@; }
+# function xicon()  { echo """]1;$@"; }
+# function xtitle() { echo """]2;$@         `hostname`"; }
+# function xboth()  { xicon $@; xtitle $@; }
+function xicon()  { echo -ne "\033""]1;$@\007"; }
+function xtitle() { echo -ne "\033""]2;$@         `hostname`\007"; }
+function xboth()  { xtitle $@; xicon $@; }
 
 # OS-specific aliases
 case `uname` in
