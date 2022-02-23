@@ -99,8 +99,8 @@ which docker > /dev/null 2>&1 && {
   function dlog() {
     docker logs $@ 2>&1
   }
-  alias dps="docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}' | grep -v k8s | sed -E 's/ {105}//' | cut -c 1-"'`tput cols`'
-  alias dpss="docker ps -a --format 'table {{.ID}} {{.Names}}\t{{.Image}}\t{{.Ports}}({{.Status}})' | grep -v k8s | sed -E 's/ {105}//'"
+  alias dps="docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}' | grep -v k8s | sed -E 's/ {100}//' | cut -c 1-"'`tput cols`'
+  alias dpss="docker ps -a --format 'table {{.ID}} {{.Names}}\t{{.Image}}\t{{.Ports}}({{.Status}})' | grep -v k8s | sed -E 's/ {100}//'"
   alias dpsl="docker ps -a --format '{{.Names}}' | grep -v k8s"
   function drestart () { (
     echo "cd ~/src/work/dc";        \cd ~/src/work/dc;
