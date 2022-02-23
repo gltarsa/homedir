@@ -37,7 +37,7 @@ Usage="$0 [--help] [--debug] [--dataset index-json-tag] [--only container-list] 
 # but this way works consistently
 
 # These are "all" the containers I use; adjust this list if other containers are/aren't needed.
-all_containers="ateb-db identity-rest ateb-amq myx hr hr-gateway ope-gateway ope-app hr-app obcgui"
+all_containers="ateb-db dataloader identity-rest ateb-amq myx hr-services-rest hr-gateway ope-gateway ope-app hr-app obcgui"
 containers=$all_containers
 
 #
@@ -150,17 +150,23 @@ function block_until_dataloader_is_done {
   last_msg="Sleeping forever to keep this container alive..."
   seconds=0
   pause=15
+  container=dataloader
 
-  echo "${nl}Waiting for dataloader startup to finish. . ."
+  echo "${nl}Waiting for ${container} startup to finish. . ."
   while true
   do
-    test "$(docker logs --tail 1 dataloader 2>&1)" = "$last_msg" && break
+    test "$(docker logs --tail 1 ${container} 2>&1)" = "$last_msg" && break
+    docker ps --all | grep --ignore-case --silent "exited.*${container}" && {
+      echo "${nl}${container} container abnormally exited!"
+      say "${container} abnormal exit"
+      return 5
+    }
     seconds=$((seconds + $pause))
     sleep $pause
     echo -ne "$(($seconds / 60)) min, $(($seconds % 60)) seconds  \r"
   done
 
-  echo "${nl}Dataloader has run to completion"
+  echo "${nl}${container} has run to completion"
 }
 
 function block_until_myx_is_up {
@@ -227,10 +233,11 @@ function verify_these_containers_are_running {
 
   error=0
   missing_containers=""
+  sleep 1 # Pause to allow failing containers to fail; is there a better way to do this w/o false success/failures?
   for container in $containers
   do
     echo
-    docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}'| grep -s $container || {
+    docker ps -all | grep --ignore-case --silent "exited.*${container}" && {
       echo 2>&1 "$container is not running"
           error=$((error + 1))
           missing_containers="$missing_containers $container"
@@ -252,7 +259,7 @@ function verify_these_containers_are_running {
 
     *)
       echo 1>&2 "? Container $missing_containers not started"
-      say "Restart failure. $missing_containers not started"
+      say "Restart failure. ${error} containers not started"
       exit $error
       ;;
   esac
