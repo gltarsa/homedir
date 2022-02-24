@@ -117,9 +117,20 @@ which docker > /dev/null 2>&1 && {
   function dl() {
     docker exec -t dataloader /bin/su - cadredd -c "/opt/ateb-deploy/datasets/bin/import_test_data.rb $*" | grep --line-buffered -v '^INFO: [a-z.0-9]*: \.'
   }
-  function dilog() {
+  # docker show spring logs
+  function dslog() {
     container_name=$1
     docker exec -t "$container_name" bash -c "tail -f /opt/spring/log/*.log"
+  }
+  # docker show ruby/sinatra logs
+  function drlog() {
+    container_name=$1
+    docker exec -t "$container_name" bash -c "tail -f /home/app/ope/logs/*.log"
+  }
+  # docker show nginx logs
+  function dnlog() {
+    container_name=$1
+    docker exec -t "$container_name" bash -c "tail -f /var/log/nginx/*.log"
   }
 }
 alias du='du -h' # human-readable sizes
