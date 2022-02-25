@@ -88,7 +88,7 @@ which bundle > /dev/null 2>&1 && {
 alias cp="cp -v"
 which colordiff > /dev/null 2>&1 && alias diff=colordiff
 which docker > /dev/null 2>&1 && {
-  alias daliases='alias | egrep "alias d" | egrep -v " df| du"  && for f in deb drestart dlog dl; do declare -f $f; done'
+  alias daliases='alias | egrep "alias d" | egrep -v " df| du"  && for f in deb dl dlerrors drestart d{n,s,r}log; do declare -f $f; done'
   alias dalias=daliases
   alias dc='docker-compose'
   alias dcup='docker-compose up -d'
@@ -119,18 +119,27 @@ which docker > /dev/null 2>&1 && {
   }
   # docker show spring logs
   function dslog() {
-    container_name=$1
-    docker exec -t "$container_name" bash -c "tail -f /opt/spring/log/*.log"
+    case $1 in
+      -a|--a*) logcmd="cat"; container_name=$2 ;;
+      *)       logcmd="tail -f"; container_name=$1 ;;
+    esac
+    docker exec -t "$container_name" bash -c "${logcmd} /opt/spring/log/*.log"
   }
   # docker show ruby/sinatra logs
   function drlog() {
-    container_name=$1
-    docker exec -t "$container_name" bash -c "tail -f /home/app/ope/logs/*.log"
+    case $1 in
+      -a|--a*) logcmd="cat"; container_name=$2 ;;
+      *)       logcmd="tail -f"; container_name=$1 ;;
+    esac
+    docker exec -t "$container_name" bash -c "${logcmd} /home/app/ope/logs/*.log"
   }
   # docker show nginx logs
   function dnlog() {
-    container_name=$1
-    docker exec -t "$container_name" bash -c "tail -f /var/log/nginx/*.log"
+    case $1 in
+      -a|--a*) logcmd="cat"; container_name=$2 ;;
+      *)       logcmd="tail -f"; container_name=$1 ;;
+    esac
+    docker exec -t "$container_name" bash -c "${logcmd} /var/log/nginx/*.log"
   }
 }
 alias du='du -h' # human-readable sizes
