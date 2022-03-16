@@ -281,12 +281,15 @@ case `hostname` in
     export DOCK_DATASETS=$base_dir/datasets-trunk
     export DOCK_IMPORT_SCRIPTS=$base_dir/messaging-campaign-reports-trunk
     export DOCK_TOOL=$base_dir/ci-2.0/tool
-    export DOCK_HR_DIST=~/src/work/health-review-app
+
+    # source locations
+    export DOCK_HR_HOME=~/src/work/health-review-app
+    export DOCK_WELLIE_REPO=/Users/5932/src/work/web-chat-bot
 
     export DOCK_MVNREPO=~/.m2/repository
 
-    # DOCK_DATABASE is a restart-all-the-containers.sh convention
-    export DOCK_DATASET=demo-dev-pmapwebcore
+    # DOCK_DATABASE is a restart-all-the-containers.sh convention in dc/docker-compose.*.yml files
+    export DOCK_DATASET=demo-dev-gis
 
     export REPOS='https://subversion.ateb.com/repos'
     repos=$REPOS
