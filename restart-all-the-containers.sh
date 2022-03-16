@@ -110,8 +110,12 @@ case $debug in
   true) say 'Debugging' ;;
 esac
 
-say "style ${style:-"default"}"  # if style is not set, say "default"
-# say dataset $dc_dataset
+case $style in
+  all) ;;
+  *)
+    say "style ${style:-"default"}"  # if style is not set, say "default"
+    ;;
+esac
 
 #++ define functions
 #
@@ -182,6 +186,8 @@ function block_until_service_ping_succeeds {
   ping_cmd=$3
   max_checks=$4
 
+  pingtmpfile=/tmp/ping$$
+
   case $max_checks in
     "")
       max_checks=20
@@ -189,7 +195,7 @@ function block_until_service_ping_succeeds {
   esac
 
   last_msg="Sleeping forever to keep this container alive..."
-  seconds=0
+  elapsed=0
   pause=15
 
   say "${name_say} check" # mispelled for correct pronunciation
@@ -200,7 +206,8 @@ function block_until_service_ping_succeeds {
   ping_count=0
   while true
   do
-    $cmd > $ping_tmpfile 2>&1
+    echo "cmd = '$ping_cmd'"
+    $ping_cmd > $pingtmpfile 2>&1
     ping_check_status=$?
     case $ping_check_status in
       0)   # success...we are up and running
@@ -219,61 +226,23 @@ function block_until_service_ping_succeeds {
         break ;;
     esac
 
-    seconds=$((seconds + $pause))
+    elapsed=$((elapsed + $pause))
     sleep $pause
-    echo -ne "$(($seconds / 60)) min, $(($seconds % 60)) seconds  \r"
+    echo -ne "$(($elapsed / 60)) min, $(($elapsed % 60)) seconds  \r"
   done
   test -e $pingtmpfile && rm $pingtmpfile
   echo ""
 }
 
+# Note: it currently takes about 10 minutes for myx to become ready in a new container
 function block_until_myx_is_up {
-  ping_cmd="curl -sS http://localhost:18001/cxf/api/healthreview/v1/ping"
+  ping_cmd="curl -S localhost:18181/cxf/api/pmap/ping"
   block_until_service_ping_succeeds Myx Mix "$ping_cmd"
 }
 
 function block_until_hr_services_is_ready {
-  ping_cmd="curl -sS http://localhost:18001/cxf/api/healthreview/v1/ping"
+  ping_cmd="curl -S http://localhost:18001/cxf/api/healthreview/v1/ping"
   block_until_service_ping_succeeds hr-services "H R services" "$ping_cmd"
-}
-
-function old_block_until_myx_is_up {
-  last_msg="Sleeping forever to keep this container alive..."
-  seconds=0
-  pause=15
-
-  say "mix check" # mispelled for correct pronunciation
-  echo "Myx container booted. Waiting for ready signal. . ."
-
-  # Once started, it takes time for myx to be ready for business.
-  # So, this code waits for the "open" sign to appear
-  ping_count=0
-  while true
-  do
-    curl -S localhost:18181/cxf/api/pmap/ping > $myxtmpfile 2>&1
-    myx_check_status=$?
-    case $myx_check_status in
-      0)   # success...we are up and running
-        break ;;
-      52)  # empty reply from server...try again
-          count=$(($count + 1))
-          test $count -ge 20 && {
-          echo 1>&2 "${nl}?Myx does not seem to have come up properly"
-          say "Mix did not start"
-          exit 2
-          }
-          ;;
-      *)
-        echo 1>&2 "? Unexpected return from curl/ping: '$myx_check_status'"
-        cat 1>&2 "${nl}$myxtmpfile"
-        break ;;
-    esac
-
-    seconds=$((seconds + $pause))
-    sleep $pause
-    echo -ne "$(($seconds / 60)) min, $(($seconds % 60)) seconds  \r"
-  done
-  echo ""
 }
 
 function start_containers_in_list {
@@ -374,7 +343,7 @@ case $containers in
 esac
 
 block_until_myx_is_up
-block_until_hr_services_is_up
+block_until_hr_services_is_ready
 
 case $style in
   quick)
