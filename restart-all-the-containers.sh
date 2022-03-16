@@ -65,6 +65,7 @@ do
     --only|--o*|-o)
       shift
       containers=$@
+      break
       ;;
 
     --dataset|--data*)
@@ -82,8 +83,14 @@ do
       exit 3
       ;;
 
+    "")
+      break
+      ;;
+
     *)
-      break;
+      echo 1>&2 "?extraneous arguments found on line: '$*'"
+      exit 4
+      ;;
   esac
   shift
 done
@@ -169,7 +176,68 @@ function block_until_dataloader_is_done {
   echo "${nl}${container} has run to completion"
 }
 
+function block_until_service_ping_succeeds {
+  name=$1
+  name_say=$2
+  ping_cmd=$3
+  max_checks=$4
+
+  case $max_checks in
+    "")
+      max_checks=20
+      ;;
+  esac
+
+  last_msg="Sleeping forever to keep this container alive..."
+  seconds=0
+  pause=15
+
+  say "${name_say} check" # mispelled for correct pronunciation
+  echo "${name} container booted. Waiting for ready signal. . ."
+
+  # Once started, it takes time for service to be ready for business.
+  # So, this code waits for the "open" sign to appear
+  ping_count=0
+  while true
+  do
+    $cmd > $ping_tmpfile 2>&1
+    ping_check_status=$?
+    case $ping_check_status in
+      0)   # success...we are up and running
+        break ;;
+      52)  # empty reply from server...try again
+          count=$(($count + 1))
+          test $count -ge $max_checks && {
+          echo 1>&2 "${nl}?${name} does not seem to have come up properly"
+          say "${name_say} did not start"
+          exit 2
+          }
+          ;;
+      *)
+        echo 1>&2 "? Unexpected return from curl/ping: '$ping_check_status'"
+        cat 1>&2 "${nl}$pingtmpfile"
+        break ;;
+    esac
+
+    seconds=$((seconds + $pause))
+    sleep $pause
+    echo -ne "$(($seconds / 60)) min, $(($seconds % 60)) seconds  \r"
+  done
+  test -e $pingtmpfile && rm $pingtmpfile
+  echo ""
+}
+
 function block_until_myx_is_up {
+  ping_cmd="curl -sS http://localhost:18001/cxf/api/healthreview/v1/ping"
+  block_until_service_ping_succeeds Myx Mix "$ping_cmd"
+}
+
+function block_until_hr_services_is_ready {
+  ping_cmd="curl -sS http://localhost:18001/cxf/api/healthreview/v1/ping"
+  block_until_service_ping_succeeds hr-services "H R services" "$ping_cmd"
+}
+
+function old_block_until_myx_is_up {
   last_msg="Sleeping forever to keep this container alive..."
   seconds=0
   pause=15
@@ -306,6 +374,7 @@ case $containers in
 esac
 
 block_until_myx_is_up
+block_until_hr_services_is_up
 
 case $style in
   quick)
