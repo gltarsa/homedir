@@ -225,7 +225,7 @@ function usejava () {
       ;;
   esac
   # only remove this if $JAVA_HOME has a value!
-  [ -z "$JAVA_HOME" ] && remove_from PATH $JAVA_HOME/bin
+  [ -z "$JAVA_HOME" ] || remove_from PATH $JAVA_HOME/bin
   export  JAVA_HOME="$(/usr/libexec/java_home -v$version)"
   prepend_to PATH ${JAVA_HOME}/bin
   java -version
