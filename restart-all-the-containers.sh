@@ -206,7 +206,6 @@ function block_until_service_ping_succeeds {
   ping_count=0
   while true
   do
-    echo "cmd = '$ping_cmd'"
     $ping_cmd > $pingtmpfile 2>&1
     ping_check_status=$?
     case $ping_check_status in
@@ -237,7 +236,7 @@ function block_until_service_ping_succeeds {
 # Note: it currently takes about 10 minutes for myx to become ready in a new container
 function block_until_myx_is_up {
   ping_cmd="curl -S localhost:18181/cxf/api/pmap/ping"
-  block_until_service_ping_succeeds Myx Mix "$ping_cmd"
+  block_until_service_ping_succeeds Myx Mix "$ping_cmd" 40
 }
 
 function block_until_hr_services_is_ready {
