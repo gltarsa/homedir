@@ -14,8 +14,7 @@ trap "test -f $myxtmpfile && rm $myxtmpfile" 0
 
 Usage="$0 [--help] [--debug] [--dataset index-json-tag] [--only container-list] [--style style-string]
 
-    A 'docker-compose pull' command will be executed if it is more than 24 hrs since the
-    last pull.
+    A 'docker-compose pull' command will be executed if it is more than 24 hrs since the Last pull.
 
     Options:
       --help       display this message
@@ -229,8 +228,8 @@ function block_until_service_ping_succeeds {
     sleep $pause
     echo -ne "$(($elapsed / 60)) min, $(($elapsed % 60)) seconds  \r"
   done
-  test -e $pingtmpfile && rm $pingtmpfile
   echo ""
+  test -e $pingtmpfile && rm $pingtmpfile
 }
 
 # Note: it currently takes about 10 minutes for myx to become ready in a new container
