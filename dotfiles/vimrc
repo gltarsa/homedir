@@ -150,7 +150,7 @@ if has("gui_running")
 
   "" Set to save named files when focus leaves the GUI
   " autocmd FocusLost * silent! wa
-  autocmd FocusLost *.* silent! stopinsert | wa
+  autocmd FocusLost * stopinsert | silent!  wa
 
   "" Setup builtin plugin netrw to look like NERDtree
   let g:netrw_liststyle = 3     " Use tree-style listing format
@@ -182,7 +182,6 @@ if has("gui_running")
 
   "" indentation by language type (i.e. Typescript convention at OMCL wants 4 spaces)
   autocmd Filetype typescript setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 smartindent
-  
 
   "" status line settings
   set laststatus=2  " always maintain a status line
