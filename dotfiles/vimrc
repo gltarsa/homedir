@@ -70,7 +70,6 @@ if has("gui_running")
           \ 'docs',
           \ 'example',
           \ 'bundle',
-          \ 'vendor',
           \ '*.md',
           \ '*-lock.json',
           \ '*.lock',
