@@ -6,24 +6,11 @@ if has("gui_running")
     set runtimepath+=~/.vim/bundle/Vundle.vim
     call vundle#begin()
     Plugin 'gmarik/Vundle.vim'
+
     "" my plugins
     Plugin 'junegunn/fzf'             " fuzzy file search (see color customizations later)
     map <c-p> :FZF<CR>
     map <c-p><cr> +
-    "" fzf colors (make them match the current color scheme)
-    let g:fzf_colors =
-          \ { 'fg':      ['fg', 'Normal'],
-          \ 'bg':      ['bg', 'Normal'],
-          \ 'hl':      ['fg', 'Comment'],
-          \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-          \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-          \ 'hl+':     ['fg', 'Statement'],
-          \ 'info':    ['fg', 'PreProc'],
-          \ 'prompt':  ['fg', 'Conditional'],
-          \ 'pointer': ['fg', 'Exception'],
-          \ 'marker':  ['fg', 'Keyword'],
-          \ 'spinner': ['fg', 'Label'],
-          \ 'header':  ['fg', 'Comment'] }
     if executable('ag')             " use ag (the_silver_surfer), if available
       let g:ackprg = 'ag --vimgrep'
     endif
@@ -31,7 +18,9 @@ if has("gui_running")
     Plugin 'xolox/vim-misc'           " base lib for other xolox plugins
     Plugin 'xolox/vim-shell'          " needed for easytags async processing
     Plugin 'ludovicchabant/vim-gutentags' " automatic tags management
-    Plugin 'skywind3000/gutentags_plus'   " automatiic tag project-file management
+    Plugin 'lifepillar/vim-colortemplate' " color template editor (:help colortemplate)
+
+    Plugin 'skywind3000/gutentags_plus'   " automatic tag project-file management
     "++
     " gutentags options
     "   (from https://vimawesome.com/plugin/gutentags-plus)
@@ -159,12 +148,6 @@ if has("gui_running")
   map <leader>n :Vexplore .     " explore the project directory<CR>
   map <leader>d :Vexplore       " explore the dir of the current file<CR>
 
-  "" General settings for GUI mode
-  autocmd BufWritePre * :%s/\s\+$//e  " remove trailing whitespace on buffer write
-  syntax on		        " enable syntax sensitivity
-  filetype indent on	" enable filetype-specific indentation
-  set mouse=a         " enable mouse interaction with non-gui vim
-
   "" Status line customizations
   set laststatus=2	" always show the status line
   set statusline=
@@ -225,7 +208,7 @@ if has("gui_running")
 
   "" colors and fonts
   set background=light
-  colorscheme solarized
+  colorscheme gt_solarized8_high
   if has("macunix")
     set guifont=Menlo:h14
     "set guifont=Anonymous_Pro:h14
@@ -253,6 +236,10 @@ else
 endif
 
 "" General settings for all modes
+autocmd BufWritePre * :%s/\s\+$//e  " remove trailing whitespace on buffer write
+syntax enable	      " enable syntax sensitivity (enable=use my highlight colors, on=use defaults)
+filetype indent on	" enable filetype-specific indentation
+set mouse=a         " enable mouse interaction with non-gui vim
 set encoding=utf-8
 set showcmd		" display incomplete cmds
 set number    " turn line numbering on
