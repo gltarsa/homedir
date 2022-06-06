@@ -6,41 +6,46 @@ tap "homebrew/cask"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "koekeishiya/formulae"
+tap "mas-cli/tap"
 
 #
 # Install our favorite commands
 #
 brew "ack"
-brew "cask"
+brew "aspell"
+brew "ca-certificates"
+brew "certbot"
 brew "colordiff"
+brew "cscope"
 brew "ctags"
 brew "curl"
-brew "emacs"
 brew "exiftool"
 brew "ffmpeg"
 brew "fzf"
 brew "git"
+brew "glib"
 brew "gource"
 brew "graphviz"
 brew "heroku/brew/heroku"
 brew "hub"
 brew "imagemagick"
 brew "jq"
-brew "macvim", link: false
 brew "mas"
-brew "mysql", restart_service: true
+brew "mysql"
 brew "ncftp"
 brew "node"
 brew "p7zip"
-brew "postgresql", restart_service: true
 brew "postgis"
-brew "ruby-build"
+brew "postgresql@11", restart_service: true
+brew "python@2", link: false
 brew "rbenv"
 brew "ruby", link: true
+brew "ruby-build"
 brew "telnet"
 brew "the_silver_searcher"
 brew "tmux"
 brew "watch"
+brew "webp"
 brew "wget"
 brew "wine"
 brew "wireshark"
@@ -57,13 +62,11 @@ cask "gimp"
 cask "java"
 cask "macdown"
 cask "macvim"
-cask "virtualbox"
 
 #
 # Install the Apple Store apps that we love
 #
 mas "Amphetamine", id: 937984704
-mas "Blackmagic Disk Speed Test", id: 425264550
 mas "GarageBand", id: 682658836
 mas "Harvest", id: 506189836
 mas "iMovie", id: 408981434
