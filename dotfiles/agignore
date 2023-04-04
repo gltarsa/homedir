@@ -5,6 +5,9 @@
 *.min.js.map
 *.min.js
 *.min.css
+*.mjs
+*.mjs.map
+*.map
 
 # JS assets
 /src/assets/*.js

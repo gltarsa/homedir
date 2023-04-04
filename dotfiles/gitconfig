@@ -71,6 +71,7 @@
   staash = stash --include-untracked  # untracked AND tracked files
   staaash = stash --all               # ignore everything (equiv to clone state)
 	praise = blame                      # why only blame?  Sometimes we praise
+	sd = diff stash@{0} stash@{0}~1
 
 [push]
   default = tracking
