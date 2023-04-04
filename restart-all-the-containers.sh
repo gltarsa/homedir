@@ -36,8 +36,8 @@ Usage="$0 [--help] [--debug] [--dataset index-json-tag] [--only container-list] 
 # but this way works consistently
 
 # These are "all" the containers I use; adjust this list if other containers are/aren't needed.
-all_containers="ateb-db dataloader identity-rest ateb-amq myx hr-services-rest hr-gateway ope-gateway ope-app hr-app obcgui"
-containers=$all_containers
+ope_containers="ateb-db dataloader identity-rest ateb-amq myx hr-services-rest hr-gateway ope-gateway ope-app hr-app obcgui"
+containers=$ope_containers
 
 #
 # Show some DOCK_variables that occasionally change so we can be subtly reminded of differences
@@ -123,6 +123,9 @@ function debug_log {
 }
 
 function docker_pull_if_needed {
+  echo "-- skipping pull"
+  return
+
   timestamp_file="/tmp/last_docker_pull.timestamp"
   a_day=$((24*60*60))
   now=$(date +'%s')
@@ -283,7 +286,7 @@ function verify_these_containers_are_running {
     0)
       echo 1>&2 "Restart completed for '$containers'."
       case $containers in
-        $all_containers)
+        $ope_containers)
           say 'Restart completed for all containers'
           ;;
         *)

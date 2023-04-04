@@ -266,3 +266,5 @@ set directory=/tmp,~/.vim/tmp,/var/tmp,.
 "" Window management
 set splitbelow	" these defaults feel more natural
 set splitright
+"" preload macros
+let @f = '/()ifakeAsync(%i)%'

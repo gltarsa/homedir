@@ -1,9 +1,29 @@
 set hlsearch
 set ignorecase smartcase
-set showmodeset
+set multiple-cursors
+" this generates an error, no idea why I had it set: set showmodeset
 "" details on plugins: https://github.com/JetBrains/ideavim/wiki/Emulated-plugins
 Plug 'terryma/vim-multiple-cursors'
-Plug 'tpope/vim-commentary'            " gcc and friends, comment out specified lines
+  " Remap multiple-cursors shortcuts to match terryma/vim-multiple-cursors
+  nmap <C-n> <Plug>NextWholeOccurrence
+  xmap <C-n> <Plug>NextWholeOccurrence
+  nmap g<C-n> <Plug>NextOccurrence
+  xmap g<C-n> <Plug>NextOccurrence
+  nmap <C-x> <Plug>SkipOccurrence
+  xmap <C-x> <Plug>SkipOccurrence
+  nmap <C-p> <Plug>RemoveOccurrence
+  xmap <C-p> <Plug>RemoveOccurrence
+  " Note that the default <A-n> and g<A-n> shortcuts don't work on Mac due to dead keys.
+  " <A-n> is used to enter accented text e.g. ñ
+  nmap <S-C-n> <Plug>AllWholeOccurrences
+  xmap <S-C-n> <Plug>AllWholeOccurrences
+  nmap g<S-C-n> <Plug>AllOccurrences
+  xmap g<S-C-n> <Plug>AllOccurrences
+Plug 'tpope/vim-commentary'            " gc and friends, comment out specified lines
 Plug 'michaeljsmith/vim-indent-object' " ii, ai and friends
 Plug 'machakann/vim-highlightedyank'   " yanked text gets highlighted for a few seconds
 Plug 'dbakker/vim-paragraph-motion'    " } & { will match to the first blank or whitespace-filled line
+
+"" Add pre-defined macros
+"" @f = make next anonymous function Jasmine fakeAsync()
+let @f = '/()ifakeAsync(%i)%'

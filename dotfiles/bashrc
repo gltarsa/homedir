@@ -103,7 +103,7 @@ case $USER in
     PS1='\[$(tput setaf 1)\]-- \u@\[$(tput bold)\]\h\[$(tput sgr0; tput setaf 1)\]:\w$(__show_git_branch) --\[$(tput sgr0)\]\n\!\$ '
     ;;
   *)     # non-root in grey (setaf 7)
-    PS1='\[$(tput setaf 7)\]-- \u@\[$(tput bold)\]\h\[$(tput sgr0; tput setaf 7)\]:\w$(__show_git_branch) --\[$(tput sgr0)\]\n\!\$ '
+    PS1='\[$(tput setaf 7)\]-- \u@\[$(tput setaf 3)\]\h\[$(tput sgr0; tput setaf 7)\]:\w$(__show_git_branch) --\[$(tput sgr0)\]\n\!\$ '
     ;;
 esac
 
@@ -263,15 +263,6 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 #
 #--
 
-#++
-# Alias definitions.
-# Be sure to put this after all PATH adjustments
-
-test -f ~/.bash_aliases && source ~/.bash_aliases
-
-#
-#--
-
 # define default location for DOCKER PMAP loading for Omnicell laptop
 case `hostname` in
   m-dev-gtarsa*|OM-C02G63BSMD6R|mbp-tarsa)
@@ -281,6 +272,7 @@ case `hostname` in
     export DOCK_DATASETS=$base_dir/datasets-trunk
     export DOCK_IMPORT_SCRIPTS=$base_dir/messaging-campaign-reports-trunk
     export DOCK_TOOL=$base_dir/ci-2.0/tool
+    export DOCK_OCP_REPO=~/src/work/ocp-configuration-app
 
     # source locations
     export DOCK_HR_HOME=~/src/work/health-review-app
@@ -305,3 +297,14 @@ case `hostname` in
     export GROOVY_HOME=/usr/local/opt/groovy/libexec
     ;;
 esac
+
+#++
+# Alias definitions.
+# Be sure to put this after all PATH adjustments
+
+test -f ~/.bash_aliases && source ~/.bash_aliases
+usenode 18
+
+#
+#--
+

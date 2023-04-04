@@ -95,17 +95,16 @@ which docker > /dev/null 2>&1 && {
     echo "docker exec -it $@ sh -c 'stty cols `tput cols` && stty rows `tput lines` && /bin/bash'";
     docker exec -it $@ sh -c "stty cols `tput cols` && stty rows `tput lines` && /bin/bash";
   }
-  function dlog() {
+  function dlog() { # docker container log
     docker logs $@ 2>&1
   }
   alias dps="docker ps -a --format 'table {{.Names}}\t{{.Status}} {{.Ports}}' | grep -v k8s | sed -E 's/ {100}//' | cut -c 1-"'`tput cols`'
   alias dpss="docker ps -a --format 'table {{.ID}} {{.Names}}\t{{.Image}}\t{{.Ports}}({{.Status}})' | grep -v k8s | sed -E 's/ {100}//'"
   alias dpsl="docker ps -a --format '{{.Names}}' | grep -v k8s"
   function drestart () { (
-    echo "cd ~/src/work/dc";        \cd ~/src/work/dc;
-    echo "docker stop $@";          docker stop $@;
-    echo "docker rm -f $@";         docker rm -f $@;
-    echo "docker-compose up -d $@"; docker-compose up -d $@;
+    echo "docker stop $@";          docker stop $@ &&
+    echo "docker rm -f $@";         docker rm -f $@ &&
+    echo "docker-compose up -d $@"; docker-compose up -d $@
   ) }
   alias dcrms='docker-compose rm -s -f'
   alias dcrm='dcrms'
@@ -113,27 +112,25 @@ which docker > /dev/null 2>&1 && {
   alias drm='docker rm -f'
   alias dstop='docker stop'
   alias dlerrors="dlog dataloader 2>&1  | egrep --line-buffered -i 'warning|error|sleeping forever' | grep -v --line-buffered Octopus | grep -v --line-buffered 'Errors Count: 0'"
-  function dl() {
+  function dl() { # dataloader <container>
     docker exec -t dataloader /bin/su - cadredd -c "/opt/ateb-deploy/datasets/bin/import_test_data.rb $*" | grep --line-buffered -v '^INFO: [a-z.0-9]*: \.'
   }
   # docker show spring logs
-  function dslog() {
+  function dslog() { # docker container Spring log
     case $1 in
       -a|--a*) logcmd="cat"; container_name=$2 ;;
       *)       logcmd="tail -f"; container_name=$1 ;;
     esac
     docker exec -t "$container_name" bash -c "${logcmd} /opt/spring/log/*.log"
   }
-  # docker show ruby/sinatra logs
-  function drlog() {
+  function drlog() { # docker container ruby/sinatra logs
     case $1 in
       -a|--a*) logcmd="cat"; container_name=$2 ;;
       *)       logcmd="tail -f"; container_name=$1 ;;
     esac
     docker exec -t "$container_name" bash -c "${logcmd} /home/app/ope/logs/*.log"
   }
-  # docker show nginx logs
-  function dnlog() {
+  function dnlog() { # docker container nginx logs
     case $1 in
       -a|--a*) logcmd="cat"; container_name=$2 ;;
       *)       logcmd="tail -f"; container_name=$1 ;;
@@ -171,11 +168,8 @@ alias hist="x;history 44 | sed 's/\[[0-9].*[0-9]\] //' | pr -w`tput cols` -2 -l2
 function home() { pushd $1; while : true; do pushd 2> /dev/null || break; popd; done }
 alias nhist="his | sed 's/^.*:[0-9][0-9]] //'"  # "naked history" - for saving history for scripts
 alias iostat='iostat -h' # human-readable sizes
-alias ireport='~/src/tools/iReport-3.0.0/ireport.sh 2> /dev/null &'
 alias ip=aws_asg_to_ip.sh
-alias load=uptime
 alias mar='sed "s/^/	/" '
-alias myxstat='curl -S localhost:18181/cxf/api/pmap/ping'
 # NMH aliases
 which next > /dev/null 2>&1 && {
 	alias n="next"
@@ -192,6 +186,7 @@ alias mqueue=mq
 alias mci='mvn clean install -ff -DskipTests -DskipDbCreate'
 alias mv='mv -v'
 alias ng_test_on_console='ng test --code-coverage=false --watch=false --browsers=ChromeHeadless --reporters=spec'
+alias ngtest='npm test | grep --line-buffered -v "\.js:"'
 # Ubuntu options
 test `uname` = Linux && {
   alias open="exo-open"
@@ -240,6 +235,29 @@ alias vim_tags='ctags -R --tag-relative=yes -f ~/.vimtags ' \
   '--exclude="public/*" ' \
   '--exclude="app/assets/javascripts/i18n/*" ' \
   '--exclude="coverage/*"'
+# Now allow switching between Node versions
+function usenode () {
+  version=$1
+  supported="14 16 18 19"
+  case "$version" in
+    lts|LTS)
+      version=18
+      ;;
+
+    "")
+      node --version
+      return
+      ;;
+  esac
+
+  for supported_version in $supported
+  do
+    remove_from PATH "/usr/local/opt/node@${supported_version}/bin"
+  done
+  prepend_to PATH "/usr/local/opt/node@${version}/bin"
+  node --version
+}
+
 # if which supports --read-alias (and by inference --read-function), then define a handy alias
 if `which --help 2> /dev/null | grep --silent -e "--read-alias"`
 then
