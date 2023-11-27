@@ -6,6 +6,10 @@ dotfiles/vim/bundle
 dotfiles/vim/bundle/.vundle/*
 dotfiles/vim/.netrwhist
 
+# Ignore AWS SSO cred caches
+dotfiles/aws/sso
+dotfiles/aws/credentials
+
 # ignore configuration directory (so we can have diff configs on diff boxes)
 config/
 
