@@ -1,7 +1,7 @@
 #/bin/bash
 base_dir=~/src/work
 
-new_token=`pbpaste | sed 's/id_token: //'`
+new_token=`pbpaste | sed 's/access_token: //'`
 
 # Check that past buffer contains something that looks a JWT token, fail if not
 case ${new_token:0:3} in
@@ -32,20 +32,20 @@ date
 for session_file in ${session_files}
 do
   # Create a new token-line
-  token_line=`sed  -n "/idToken:/s/.*/${new_token}/p" ${session_file}`
+  token_line=`sed  -n "/accessToken:/s/.*/${new_token}/p" ${session_file}`
   case $first_pass in
     true)
-      echo "new idToken tail:     ${token_line: -10}"
+      echo "new accessToken tail:     ${token_line: -10}"
       first_pass=false
       ;;
   esac
 
   # Actually make the token replacement
-  # Note: sometimes the file has the token on a separate line from the `idToken:` tag
+  # Note: sometimes the file has the token on a separate line from the `accessToken:` tag
   # so we concatenate the line following and substitute everything within the first single
   # quote pair.
   echo "Replacing token in $session_file" | sed "s=${base_dir}/=="
-  sed -i "" "/'testI[dD]Token'/s//'${new_token}'/; /eyJ/s/'eyJ.*'/'${new_token}'/" ${session_file}
+  sed -i "" "/'testAccessToken'/s//'${new_token}'/; /eyJ/s/'eyJ.*'/'${new_token}'/" ${session_file}
 
   # Sed won't fail if no substitution is made, so we explicitly check for the replacement
   grep --silent "${new_token}" ${session_file} || {
