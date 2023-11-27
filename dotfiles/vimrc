@@ -163,8 +163,8 @@ if has("gui_running")
     source ~/.vim/_partials/tab_mgt.vim
   endif
 
-  "" indentation by language type (i.e. Typescript convention at OMCL wants 4 spaces)
-  autocmd Filetype typescript setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4 smartindent
+  "" indentation by language type (i.e. Typescript convention at OMCL wants 2 spaces)
+  " autocmd Filetype typescript setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2 smartindent
 
   "" status line settings
   set laststatus=2  " always maintain a status line

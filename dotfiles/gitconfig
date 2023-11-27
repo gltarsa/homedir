@@ -66,12 +66,15 @@
   # commend: glom the current commit onto the last commit (saves a rebase -i/squash)
   commend = commit --amend --no-edit
   #
+  headdiff=diff head~1 head
+  hd=headdiff
   # stash variants
   stsh = stash --keep-index           # only unstanged changes to tracked files
   staash = stash --include-untracked  # untracked AND tracked files
   staaash = stash --all               # ignore everything (equiv to clone state)
 	praise = blame                      # why only blame?  Sometimes we praise
 	sd = diff stash@{0} stash@{0}~1
+  stashdiff = sd
 
 [push]
   default = tracking
@@ -97,3 +100,5 @@
   clean = git media clean %f
   smudge = git media smudge %f
   required = true
+[init]
+	defaultBranch = main

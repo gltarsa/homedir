@@ -235,6 +235,9 @@ test -e ~/use_rvm && {
 qt5_prefix='/usr/local/opt/qt@5.5'
 [ -d $qt5_prefix ] &&  prepend_to PATH $qt5_prefix/bin
 #-- end PATH adjustments
+#
+# Add Rancher Desktop dir to PATH so the command line args will be available
+append_to PATH ~/.rd/bin
 
 #++
 # Bash history configuration
@@ -263,15 +266,19 @@ PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 #
 #--
 
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/5932/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+
 # define default location for DOCKER PMAP loading for Omnicell laptop
 case `hostname` in
   m-dev-gtarsa*|OM-C02G63BSMD6R|mbp-tarsa)
-    base_dir=~/src/work/docker-pmap
-    export DOCK_PMAPWEB=~/src/work/trunk
-    export DOCK_COMPONENT=$base_dir/ci-2.0/component
+    base_dir=~/src/work
+    export DOCK_PMAPWEB=$base_dir/trunk
+    export DOCK_COMPONENT=$base_dir/docker-pmap/ci-2.0/component
     export DOCK_DATASETS=$base_dir/datasets-trunk
-    export DOCK_IMPORT_SCRIPTS=$base_dir/messaging-campaign-reports-trunk
-    export DOCK_TOOL=$base_dir/ci-2.0/tool
+    export DOCK_IMPORT_SCRIPTS=$base_dir/docker-pmap/messaging-campaign-reports-trunk
+    export DOCK_TOOL=$base_dir/docker-pmap/ci-2.0/tool
     export DOCK_OCP_REPO=~/src/work/ocp-configuration-app
 
     # source locations

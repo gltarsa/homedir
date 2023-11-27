@@ -30,7 +30,7 @@
 # allows args to be displayed prior to execution
 # arg1 must be the command name
 #
-function echo_and_do()
+function _echo_and_do()
     {
     echo 2>&1 "--> $@" 2> /dev/tty
     "$@"
@@ -40,7 +40,7 @@ function echo_and_do()
 # allows cmd to immediately execute in the background
 # arg 1 must be the command name
 #
-function do_background()
+function _do_background()
     {
     "$@" &
     }
@@ -50,13 +50,20 @@ function do_background()
 # arg 1 must be the post-command in its entirety
 # arg 2 must be the command name
 #
-function do_after()
+function _do_after()
     {
     local postcmd=$1
     shift
 
     "$@" ; $postcmd
     }
+
+function _nametab() {
+    prefix="$1"
+    text="$2"
+    suffix="$3"
+    echo -ne "\033];$text\007"
+  }
 
 # use --color, when able; also follow symlinks, use human sizes + show file types
 lscmd="ls -FshH"
@@ -143,11 +150,12 @@ alias df='df -Ph' # human-readable sizes
 alias ecco="wine '/Users/tarsa/.wine/drive_c/Program Files/ECCO/eccoext' 2> /tmp/ecco.wine.errs.txt &"
 # on Mac OS X, we prefer to use Emacs in the terminal window
 alias emacs='\ec -nw --quiet'
-alias xemacs='do_background ~/bin/ec --quiet'
+alias xemacs='_do_background ~/bin/ec --quiet'
 which git > /dev/null 2>&1 && {
   test `uname` = Darwin && alias git=hub
   alias gd="git diff"
   alias gs="git status"
+  alias stashdiff="git diff stash@{0} stash@{0}~1"
 }
 alias grep='grep -s'  # inhibit "...Is a directory" messages
 # alias gvim='gvim 2> /dev/null 1>&2'
@@ -176,7 +184,7 @@ which next > /dev/null 2>&1 && {
 	alias rs="rmm;next"
 	alias rp="rmm;prev"
 	alias pack="folder -pack"
-	alias pick="do_after 'scan pick' pick -sequence pick"
+	alias pick="_do_after 'scan pick' pick -sequence pick"
 	alias repl="repl -filter ~/MH-mail/repl.filter -nocc all"
 	alias cur="folder | sed 's/+//g;s/\.//g;s/;//g' | awk '{printf "'"+%s %s\n", $1, $9}'"'"
 	alias jforw="forw -form joke-components"
@@ -190,10 +198,10 @@ alias ngtest='npm test | grep --line-buffered -v "\.js:"'
 # Ubuntu options
 test `uname` = Linux && {
   alias open="exo-open"
-  alias pkgupdate="do_background gksudo synaptic"
+  alias pkgupdate="_do_background gksudo synaptic"
 }
 alias ping='ping -c 5'
-alias rcp="echo_and_do /bin/rcp"
+alias rcp="_echo_and_do /bin/rcp"
 alias reload='xrdb -load ~/.Xdefaults'
 alias ss='svn status'
 alias sdiff='svn diff -x "-w --ignore-eol-style"'
@@ -238,7 +246,7 @@ alias vim_tags='ctags -R --tag-relative=yes -f ~/.vimtags ' \
 # Now allow switching between Node versions
 function usenode () {
   version=$1
-  supported="14 16 18 19"
+  supported="14 16 18 19 20 21 22 23"
   case "$version" in
     lts|LTS)
       version=18
@@ -268,11 +276,8 @@ alias x='clear'
 alias xrs='xrdb -query'
 alias xssh='ssh -X' # enable X11 passthru by default
 # icon manipulation.  Works for most/many terminal emulators
-# function xicon()  { echo """]1;$@"; }
-# function xtitle() { echo """]2;$@         `hostname`"; }
-# function xboth()  { xicon $@; xtitle $@; }
-function xicon()  { echo -ne "\033""]1;$@\007"; }
-function xtitle() { echo -ne "\033""]2;$@         `hostname`\007"; }
+function xicon()  { _nametab 1 "$@"; }
+function xtitle() { _nametab 2 "$@         `hostname`"; }
 function xboth()  { xtitle $@; xicon $@; }
 
 # OS-specific aliases
