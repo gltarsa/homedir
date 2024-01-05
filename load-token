@@ -2,12 +2,13 @@
 session_base_name='session.service.ts'
 new_token=`pbpaste | sed 's/access_token: //'`
 
-# Check that past buffer contains something that looks a JWT token, fail if not
-case ${new_token:0:3} in
-  eyJ)
+# Check that paste buffer contains something that looks a JWT token
+case ${new_token:0:5} in
+  eyJra)
     ;;
+
   *)
-    echo "Token is not encoded JSON! (starts with: '${new_token:0:15}...')"
+    echo "Access token is not encoded JSON! (starts with: '${new_token:0:15}...')"
     exit 3
     ;;
 esac
