@@ -1,14 +1,13 @@
 #/bin/bash
 session_base_name='session.service.ts'
-new_token=`pbpaste | sed 's/access_token: //'`
+new_token=`pbpaste | sed 's/id_token: //'`
 
-# Check that paste buffer contains something that looks a JWT token
-case ${new_token:0:5} in
-  eyJra)
+# Check that past buffer contains something that looks a JWT token, fail if not
+case ${new_token:0:3} in
+  eyJ)
     ;;
-
   *)
-    echo "Access token is not encoded JSON! (starts with: '${new_token:0:15}...')"
+    echo "Token is not encoded JSON! (starts with: '${new_token:0:15}...')"
     exit 3
     ;;
 esac
@@ -24,8 +23,7 @@ case $session_file in
 esac
 
 date
-repo_dir=`pwd | sed "s=$(cd ..;pwd)/=="`
-echo session_file: $repo_dir/$session_file
+echo session_file: $session_file
 case ${#session_file[@]} in
   0)
     echo 1>&2 "?No $session_base_name file found"
@@ -45,14 +43,14 @@ esac
 
 
 # Create a new token-line
-token_line=`sed  -n "/accessToken:/s/.*/${new_token}/p" ${session_file}`
-echo "new accessToken tail:     ${token_line: -10}"
+token_line=`sed  -n "/idToken:/s/.*/${new_token}/p" ${session_file}`
+echo "new idToken tail:     ${token_line: -10}"
 
 # Actually make the token replacement
-# Note: sometimes the file has the token on a separate line from the `accessToken:` tag
+# Note: sometimes the file has the token on a separate line from the `idToken:` tag
 # so we concatenate the line following and substitute everything within the first single
 # quote pair.
-sed -i "" "/'testAccessToken'/s//'${new_token}'/; /eyJ/s/'eyJ.*'/'${new_token}'/" ${session_file}
+sed -i "" "/'testI[dD]Token'/s//'${new_token}'/; /eyJ/s/'eyJ.*'/'${new_token}'/" ${session_file}
 
 # Sed won't fail if no substitution is made, so we explicitly check for the replacement
 grep --silent "${new_token}" ${session_file} || {
