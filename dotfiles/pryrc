@@ -1,9 +1,3 @@
-begin
-  require 'awesome_print'
-  AwesomePrint.pry!
-rescue LoadError
-  puts '"awesome_print" not available'
-end
 if defined?(PryByebug) || defined?(PryDebugger)
   Pry.commands.alias_command 'c', 'continue'
   Pry.commands.alias_command 's', 'step'
