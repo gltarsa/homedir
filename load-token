@@ -33,7 +33,7 @@ case ${#session_file[@]} in
     ;;
 
   1)
-    echo "new token tail:       ${new_token: -10}"
+    echo "new accessToken tail:       ${new_token: -10}"
     ;;
 
   *)
@@ -46,7 +46,6 @@ esac
 
 # Create a new token-line
 token_line=`sed  -n "/accessToken:/s/.*/${new_token}/p" ${session_file}`
-echo "new accessToken tail:     ${token_line: -10}"
 
 # Actually make the token replacement
 # Note: sometimes the file has the token on a separate line from the `accessToken:` tag

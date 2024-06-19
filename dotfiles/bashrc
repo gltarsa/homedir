@@ -305,6 +305,9 @@ case `hostname` in
     ;;
 esac
 
+# enable fzf shell integration
+eval "$(fzf --bash)"
+
 #++
 # Alias definitions.
 # Be sure to put this after all PATH adjustments
